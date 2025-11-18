@@ -5,14 +5,26 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
-# Copiar código fuente
-COPY . .
+# Copiar solo lo necesario
+COPY prisma ./prisma
+COPY src ./src
+COPY nest-cli.json tsconfig*.json ./
 
-# Generar Prisma Client y construir la aplicación
-RUN sh -c 'DATABASE_URL=postgresql://dummy:dummy@localhost:5432/dummy npx prisma generate && npm run build'
+# Generar Prisma Client
+RUN npx prisma generate
+
+# Instalar dependencias de desarrollo para el build
+RUN npm install -g @nestjs/cli
+RUN npm install --save-dev @types/node
+
+# Construir
+RUN npm run build
+
+# Verificar estructura
+RUN ls -la dist/
 
 # Puerto expuesto
 EXPOSE 3000
 
 # Comando de inicio
-CMD ["sh", "-c", "node dist/main"]
+CMD ["node", "dist/main"]
