@@ -20,11 +20,8 @@ RUN npm install --save-dev @types/node
 # Construir
 RUN npm run build
 
-# Verificar estructura
-RUN ls -la dist/
-
 # Puerto expuesto
 EXPOSE 3000
 
-# Comando de inicio
-CMD ["node", "dist/main"]
+# Comando de inicio que ejecuta migraciones y luego inicia la app
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]
