@@ -3,11 +3,11 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
+COPY prisma ./prisma/
 COPY . .
 # Generar Prisma Client antes de construir
 RUN npx prisma generate
 RUN npm run build
-COPY prisma ./prisma/
 
 # Etapa de producción
 FROM node:18-alpine
